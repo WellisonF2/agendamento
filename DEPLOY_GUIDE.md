@@ -17,6 +17,33 @@ O projeto foi compilado com sucesso e está pronto para deploy!
 1. **Conta GitHub** - Para hospedar o código
 2. **Conta Vercel** - Para deploy e hospedagem
 3. **Git configurado** - Para versionamento
+4. **Variáveis de Ambiente** configuradas (veja `.env.example`)
+
+---
+
+## 🔧 Environment Variables Setup
+
+Antes de fazer o deploy, configure as variáveis de ambiente:
+
+### Local Development
+```bash
+# 1. Copie o arquivo de exemplo
+cp .env.example .env.local
+
+# 2. Edite .env.local com seus valores reais
+# - TURSO_DATABASE_URL: URL do seu banco Turso
+# - TURSO_AUTH_TOKEN: Token de autenticação do Turso
+# - VITE_APP_URL: URL da sua aplicação
+```
+
+### Vercel Environment Variables
+No painel da Vercel, configure:
+- `TURSO_DATABASE_URL`
+- `TURSO_AUTH_TOKEN`
+- `VITE_APP_NAME`
+- `VITE_APP_VERSION`
+- `VITE_APP_URL`
+- `NODE_ENV=production`
 
 ---
 
