@@ -73,6 +73,18 @@ export default async function handler(
           // Listar agendamentos com filtros opcionais
           const { data_inicio, data_fim, cliente_id } = req.query;
           
+          // Aplicar filtros
+          const conditions = [];
+          if (data_inicio) {
+            conditions.push(gte(agendamentos.dataIso, String(data_inicio)));
+          }
+          if (data_fim) {
+            conditions.push(lte(agendamentos.dataIso, String(data_fim)));
+          }
+          if (cliente_id) {
+            conditions.push(eq(agendamentos.clienteId, Number(cliente_id)));
+          }
+
           let query = db
             .select({
               id: agendamentos.id,
@@ -87,18 +99,6 @@ export default async function handler(
             })
             .from(agendamentos)
             .leftJoin(clientes, eq(agendamentos.clienteId, clientes.id));
-
-          // Aplicar filtros
-          const conditions = [];
-          if (data_inicio) {
-            conditions.push(gte(agendamentos.dataIso, String(data_inicio)));
-          }
-          if (data_fim) {
-            conditions.push(lte(agendamentos.dataIso, String(data_fim)));
-          }
-          if (cliente_id) {
-            conditions.push(eq(agendamentos.clienteId, Number(cliente_id)));
-          }
 
           if (conditions.length > 0) {
             query = query.where(and(...conditions));

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import type { BeforeInstallPromptEvent } from '../types';
 
 export function usePWA() {
-  const [deferredPrompt, setDeferredPrompt] = useState<Event | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
 
