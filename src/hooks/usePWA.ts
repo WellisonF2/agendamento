@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import type { BeforeInstallPromptEvent } from '../types';
 
 export function usePWA() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<Event | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
 
@@ -10,7 +10,7 @@ export function usePWA() {
     // Check if app is already installed
     const checkInstalled = () => {
       // iOS Safari
-      if ((window.navigator as any).standalone) {
+      if ((window.navigator as Navigator & { standalone?: boolean }).standalone) {
         setIsInstalled(true);
         return;
       }

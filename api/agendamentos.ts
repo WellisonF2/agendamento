@@ -26,7 +26,7 @@ export default async function handler(
 
   try {
     switch (req.method) {
-      case 'GET':
+      case 'GET': {
         if (req.query.id) {
           // Buscar agendamento específico com detalhes
           const agendamento = await db
@@ -107,8 +107,9 @@ export default async function handler(
           const allAgendamentos = await query;
           return res.json(allAgendamentos);
         }
+      }
 
-      case 'POST':
+      case 'POST': {
         const { cliente_id, data_iso, hora, pagamento, obs, servicos: servicosData } = req.body;
         
         if (!cliente_id || !data_iso || !hora || !pagamento || !servicosData?.length) {
@@ -143,8 +144,9 @@ export default async function handler(
         }
         
         return res.status(201).json(novoAgendamento[0]);
+      }
 
-      case 'PUT':
+      case 'PUT': {
         if (!req.query.id) {
           return res.status(400).json({ error: 'ID é obrigatório' });
         }
@@ -203,8 +205,9 @@ export default async function handler(
         }
         
         return res.json(agendamentoAtualizado[0]);
+      }
 
-      case 'DELETE':
+      case 'DELETE': {
         if (!req.query.id) {
           return res.status(400).json({ error: 'ID é obrigatório' });
         }
@@ -220,6 +223,7 @@ export default async function handler(
           .where(eq(agendamentos.id, Number(req.query.id)));
         
         return res.status(204).end();
+      }
 
       default:
         return res.status(405).json({ error: 'Método não permitido' });

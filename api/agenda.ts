@@ -2,7 +2,7 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 import { drizzle } from 'drizzle-orm/libsql';
 import { createClient } from '@libsql/client';
 import { agendamentos, clientes, agendamentoServicos, servicos } from '../src/lib/schema';
-import { eq, and, gte, lte, desc } from 'drizzle-orm';
+import { eq, and, gte, lte } from 'drizzle-orm';
 import dayjs from 'dayjs';
 
 const client = createClient({

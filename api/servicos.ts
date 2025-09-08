@@ -26,7 +26,7 @@ export default async function handler(
 
   try {
     switch (req.method) {
-      case 'GET':
+      case 'GET': {
         if (req.query.id) {
           // Buscar serviço específico
           const servico = await db
@@ -45,8 +45,9 @@ export default async function handler(
           const allServicos = await db.select().from(servicos);
           return res.json(allServicos);
         }
+      }
 
-      case 'POST':
+      case 'POST': {
         const { nome, preco_cents, duracao_min } = req.body;
         
         if (!nome || !preco_cents || !duracao_min) {
@@ -61,8 +62,9 @@ export default async function handler(
           .returning();
         
         return res.status(201).json(novoServico[0]);
+      }
 
-      case 'PUT':
+      case 'PUT': {
         if (!req.query.id) {
           return res.status(400).json({ error: 'ID é obrigatório' });
         }
@@ -88,8 +90,9 @@ export default async function handler(
         }
         
         return res.json(servicoAtualizado[0]);
+      }
 
-      case 'DELETE':
+      case 'DELETE': {
         if (!req.query.id) {
           return res.status(400).json({ error: 'ID é obrigatório' });
         }
@@ -99,6 +102,7 @@ export default async function handler(
           .where(eq(servicos.id, Number(req.query.id)));
         
         return res.status(204).end();
+      }
 
       default:
         return res.status(405).json({ error: 'Método não permitido' });
