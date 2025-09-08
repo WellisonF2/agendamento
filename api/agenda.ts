@@ -37,18 +37,18 @@ export default async function handler(
       const agendamentosData = await db
         .select({
           id: agendamentos.id,
-          cliente_id: agendamentos.cliente_id,
+          cliente_id: agendamentos.clienteId,
           cliente_nome: clientes.nome,
           cliente_telefone: clientes.telefone,
-          data_iso: agendamentos.data_iso,
+          data_iso: agendamentos.dataIso,
           hora: agendamentos.hora,
-          total_cents: agendamentos.total_cents,
+          total_cents: agendamentos.totalCents,
           pagamento: agendamentos.pagamento,
           obs: agendamentos.obs,
         })
         .from(agendamentos)
-        .leftJoin(clientes, eq(agendamentos.cliente_id, clientes.id))
-        .where(eq(agendamentos.data_iso, String(data)))
+        .leftJoin(clientes, eq(agendamentos.clienteId, clientes.id))
+        .where(eq(agendamentos.dataIso, String(data)))
         .orderBy(agendamentos.hora);
 
       // Buscar serviços para cada agendamento
@@ -57,15 +57,15 @@ export default async function handler(
           const servicosAgendamento = await db
             .select({
               id: agendamentoServicos.id,
-              servico_id: agendamentoServicos.servico_id,
+              servico_id: agendamentoServicos.servicoId,
               servico_nome: servicos.nome,
               qtd: agendamentoServicos.qtd,
-              preco_unit_cents: agendamentoServicos.preco_unit_cents,
-              duracao_min: agendamentoServicos.duracao_min,
+              preco_unit_cents: agendamentoServicos.precoUnitCents,
+              duracao_min: agendamentoServicos.duracaoMin,
             })
             .from(agendamentoServicos)
-            .leftJoin(servicos, eq(agendamentoServicos.servico_id, servicos.id))
-            .where(eq(agendamentoServicos.agendamento_id, agendamento.id));
+            .leftJoin(servicos, eq(agendamentoServicos.servicoId, servicos.id))
+            .where(eq(agendamentoServicos.agendamentoId, agendamento.id));
 
           return {
             ...agendamento,
@@ -83,20 +83,20 @@ export default async function handler(
       const agendamentosMes = await db
         .select({
           id: agendamentos.id,
-          data_iso: agendamentos.data_iso,
+          data_iso: agendamentos.dataIso,
           hora: agendamentos.hora,
-          total_cents: agendamentos.total_cents,
+          total_cents: agendamentos.totalCents,
           cliente_nome: clientes.nome,
         })
         .from(agendamentos)
-        .leftJoin(clientes, eq(agendamentos.cliente_id, clientes.id))
+        .leftJoin(clientes, eq(agendamentos.clienteId, clientes.id))
         .where(
           and(
-            gte(agendamentos.data_iso, inicioMes),
-            lte(agendamentos.data_iso, fimMes)
+            gte(agendamentos.dataIso, inicioMes),
+            lte(agendamentos.dataIso, fimMes)
           )
         )
-        .orderBy(agendamentos.data_iso, agendamentos.hora);
+        .orderBy(agendamentos.dataIso, agendamentos.hora);
 
       // Agrupar por data
       const agendamentosPorData = agendamentosMes.reduce((acc, agendamento) => {
@@ -133,23 +133,23 @@ export default async function handler(
       const proximosAgendamentos = await db
         .select({
           id: agendamentos.id,
-          cliente_id: agendamentos.cliente_id,
+          cliente_id: agendamentos.clienteId,
           cliente_nome: clientes.nome,
           cliente_telefone: clientes.telefone,
-          data_iso: agendamentos.data_iso,
+          data_iso: agendamentos.dataIso,
           hora: agendamentos.hora,
-          total_cents: agendamentos.total_cents,
+          total_cents: agendamentos.totalCents,
           pagamento: agendamentos.pagamento,
         })
         .from(agendamentos)
-        .leftJoin(clientes, eq(agendamentos.cliente_id, clientes.id))
+        .leftJoin(clientes, eq(agendamentos.clienteId, clientes.id))
         .where(
           and(
-            gte(agendamentos.data_iso, hoje),
-            lte(agendamentos.data_iso, proximaSemana)
+            gte(agendamentos.dataIso, hoje),
+            lte(agendamentos.dataIso, proximaSemana)
           )
         )
-        .orderBy(agendamentos.data_iso, agendamentos.hora)
+        .orderBy(agendamentos.dataIso, agendamentos.hora)
         .limit(20);
 
       return res.json(proximosAgendamentos);

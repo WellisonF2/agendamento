@@ -57,7 +57,7 @@ export default async function handler(
 
         const novoServico = await db
           .insert(servicos)
-          .values({ nome, preco_cents, duracao_min })
+          .values({ nome, precoCents: preco_cents, duracaoMin: duracao_min })
           .returning();
         
         return res.status(201).json(novoServico[0]);
@@ -77,8 +77,8 @@ export default async function handler(
           .update(servicos)
           .set({ 
             nome: nomeUpdate, 
-            preco_cents: precoUpdate, 
-            duracao_min: duracaoUpdate 
+            precoCents: precoUpdate, 
+            duracaoMin: duracaoUpdate 
           })
           .where(eq(servicos.id, Number(req.query.id)))
           .returning();

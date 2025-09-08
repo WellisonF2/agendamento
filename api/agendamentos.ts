@@ -32,18 +32,18 @@ export default async function handler(
           const agendamento = await db
             .select({
               id: agendamentos.id,
-              cliente_id: agendamentos.cliente_id,
+              cliente_id: agendamentos.clienteId,
               cliente_nome: clientes.nome,
               cliente_telefone: clientes.telefone,
-              data_iso: agendamentos.data_iso,
+              data_iso: agendamentos.dataIso,
               hora: agendamentos.hora,
-              total_cents: agendamentos.total_cents,
+              total_cents: agendamentos.totalCents,
               pagamento: agendamentos.pagamento,
               obs: agendamentos.obs,
-              created_at: agendamentos.created_at,
+              created_at: agendamentos.createdAt,
             })
             .from(agendamentos)
-            .leftJoin(clientes, eq(agendamentos.cliente_id, clientes.id))
+            .leftJoin(clientes, eq(agendamentos.clienteId, clientes.id))
             .where(eq(agendamentos.id, Number(req.query.id)))
             .limit(1);
           
@@ -55,15 +55,15 @@ export default async function handler(
           const servicosAgendamento = await db
             .select({
               id: agendamentoServicos.id,
-              servico_id: agendamentoServicos.servico_id,
+              servico_id: agendamentoServicos.servicoId,
               servico_nome: servicos.nome,
               qtd: agendamentoServicos.qtd,
-              preco_unit_cents: agendamentoServicos.preco_unit_cents,
-              duracao_min: agendamentoServicos.duracao_min,
+              preco_unit_cents: agendamentoServicos.precoUnitCents,
+              duracao_min: agendamentoServicos.duracaoMin,
             })
             .from(agendamentoServicos)
-            .leftJoin(servicos, eq(agendamentoServicos.servico_id, servicos.id))
-            .where(eq(agendamentoServicos.agendamento_id, Number(req.query.id)));
+            .leftJoin(servicos, eq(agendamentoServicos.servicoId, servicos.id))
+            .where(eq(agendamentoServicos.agendamentoId, Number(req.query.id)));
           
           return res.json({
             ...agendamento[0],
@@ -76,28 +76,28 @@ export default async function handler(
           let query = db
             .select({
               id: agendamentos.id,
-              cliente_id: agendamentos.cliente_id,
+              cliente_id: agendamentos.clienteId,
               cliente_nome: clientes.nome,
-              data_iso: agendamentos.data_iso,
+              data_iso: agendamentos.dataIso,
               hora: agendamentos.hora,
-              total_cents: agendamentos.total_cents,
+              total_cents: agendamentos.totalCents,
               pagamento: agendamentos.pagamento,
               obs: agendamentos.obs,
-              created_at: agendamentos.created_at,
+              created_at: agendamentos.createdAt,
             })
             .from(agendamentos)
-            .leftJoin(clientes, eq(agendamentos.cliente_id, clientes.id));
+            .leftJoin(clientes, eq(agendamentos.clienteId, clientes.id));
 
           // Aplicar filtros
           const conditions = [];
           if (data_inicio) {
-            conditions.push(gte(agendamentos.data_iso, String(data_inicio)));
+            conditions.push(gte(agendamentos.dataIso, String(data_inicio)));
           }
           if (data_fim) {
-            conditions.push(lte(agendamentos.data_iso, String(data_fim)));
+            conditions.push(lte(agendamentos.dataIso, String(data_fim)));
           }
           if (cliente_id) {
-            conditions.push(eq(agendamentos.cliente_id, Number(cliente_id)));
+            conditions.push(eq(agendamentos.clienteId, Number(cliente_id)));
           }
 
           if (conditions.length > 0) {
@@ -126,7 +126,7 @@ export default async function handler(
         // Criar agendamento
         const novoAgendamento = await db
           .insert(agendamentos)
-          .values({ cliente_id, data_iso, hora, total_cents, pagamento, obs })
+          .values({ clienteId: cliente_id, dataIso: data_iso, hora, totalCents: total_cents, pagamento, obs })
           .returning();
         
         const agendamentoId = novoAgendamento[0].id;
@@ -134,11 +134,11 @@ export default async function handler(
         // Inserir serviços do agendamento
         for (const servico of servicosData) {
           await db.insert(agendamentoServicos).values({
-            agendamento_id: agendamentoId,
-            servico_id: servico.servico_id,
+            agendamentoId: agendamentoId,
+            servicoId: servico.servico_id,
             qtd: servico.qtd,
-            preco_unit_cents: servico.preco_unit_cents,
-            duracao_min: servico.duracao_min,
+            precoUnitCents: servico.preco_unit_cents,
+            duracaoMin: servico.duracao_min,
           });
         }
         
@@ -169,10 +169,10 @@ export default async function handler(
         const agendamentoAtualizado = await db
           .update(agendamentos)
           .set({ 
-            cliente_id: clienteUpdate,
-            data_iso: dataUpdate,
+            clienteId: clienteUpdate,
+            dataIso: dataUpdate,
             hora: horaUpdate,
-            total_cents: novoTotal || undefined,
+            totalCents: novoTotal || undefined,
             pagamento: pagamentoUpdate,
             obs: obsUpdate
           })
@@ -188,16 +188,16 @@ export default async function handler(
           // Remover serviços existentes
           await db
             .delete(agendamentoServicos)
-            .where(eq(agendamentoServicos.agendamento_id, Number(req.query.id)));
+            .where(eq(agendamentoServicos.agendamentoId, Number(req.query.id)));
 
           // Inserir novos serviços
           for (const servico of servicosUpdate) {
             await db.insert(agendamentoServicos).values({
-              agendamento_id: Number(req.query.id),
-              servico_id: servico.servico_id,
+              agendamentoId: Number(req.query.id),
+              servicoId: servico.servico_id,
               qtd: servico.qtd,
-              preco_unit_cents: servico.preco_unit_cents,
-              duracao_min: servico.duracao_min,
+              precoUnitCents: servico.preco_unit_cents,
+              duracaoMin: servico.duracao_min,
             });
           }
         }
@@ -212,7 +212,7 @@ export default async function handler(
         // Remover serviços do agendamento primeiro (cascade)
         await db
           .delete(agendamentoServicos)
-          .where(eq(agendamentoServicos.agendamento_id, Number(req.query.id)));
+          .where(eq(agendamentoServicos.agendamentoId, Number(req.query.id)));
 
         // Remover agendamento
         await db
